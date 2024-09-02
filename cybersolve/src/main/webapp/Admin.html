@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #000000, #ffffff); /* Light blue background */
+            
+        }
+        .navbar {
+            background-color: #333; /* Dark to light blue gradient */
+            overflow: hidden;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+        .navbar a:hover {
+            background: #ddd;
+            color: #333;
+        }
+        .navbar .logout {
+            float: right;
+            background-color: #e74c3c; /* Red background */
+            color: white;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .navbar .logout:hover {
+            background-color: #c0392b; /* Darker red on hover */
+            color: white;
+        }
+        .content {
+            
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: white;
+            margin: 20px;
+            font-size: 15px; /* Slightly larger font */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: none;
+        }
+        th, td {
+            padding: 12px 20px; /* More padding for better spacing */
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background: #34495e; /* Darker blue header */
+            color: white;
+            font-size: 16px;
+        }
+        td {
+            background: #f9f9f9;
+        }
+        tr:nth-child(even) td {
+            background: #ecf0f1; /* Light gray for even rows */
+        }
+        tr:hover td {
+            background: #bdc3c7; /* Hover color for table rows */
+            transition: background 0.3s;
+        }
+        button {
+            border: none;
+            border-radius: 4px;
+            padding: 10px 18px; /* More padding for buttons */
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s, transform 0.2s;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .btn-form{
+        background-color:green;
+        color:white;
+        
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .accept-button {
+            background-color: #2ecc71; /* Green background */
+        }
+        .reject-button {
+            background-color: #e74c3c; /* Red background */
+        }
+        .hidden {
+            display: none;
+        }
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-inline input[type="text"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            flex-grow: 1;
+            font-size: 14px;
+        }
+        .btn-green {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-green:hover {
+            background-color: #1e8449;
+        }
+        .username{
+          color:white;
+           }
+           .resource-request {
+
+		   background: #c3e6cb;
+ 
+		}
+		.resource-request {
+
+		   background: #c3e6cb;
+ 
+		}
+		S
+
+		.role-request {
+
+		    background-color: #c3e6cb; /* Light Green */
+
+		}
+
+		/* Request Status Colors */
+
+		.status-accepted {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+
+		.status-rejected {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+
+		.status-pending {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+        
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#show-requests" onclick="toggleContent('requests-content', loadRequests)">View Requests</a>
+                <a href="#remove-resource-user" onclick="toggleContent('remove-resource-user-content', loadRemoveResourceUser)">Remove Resource from User</a>
+        <a href="#add-resource-db" onclick="toggleContent('add-resource-db-content', loadAddResourceForm)">Add Resource to DB</a>
+        <a href="#remove-resource-db" onclick="toggleContent('remove-resource-db-content', loadResources)">Remove Resource from DB</a>
+
+        <a href="#check-users-resource" onclick="toggleContent('check-users-resource-content')">Check User Resources</a>
+        <a href="#check-resources-user" onclick="toggleContent('check-resources-user-content')">Check Resource Users</a>
+        <a href="#checkApprovals" onclick="toggleContent('check-approvals',checkApprovals)">Check approvals</a>
+        <a href="/cybersolve/addUser.jsp">Add User</a>
+        <a href="#remove-user" onclick="toggleContent('remove-user', loadUsersDropdown)">Remove User</a>
+ 
+        <a href="#change-password" class="change" onclick="toggleContent('password-change')">Change password</a>
+        <a href="#" onclick="logoutfunction()" class="logout">Logout</a>
+    </div>
+    <div class="username">
+     <h2>
+     Welcome admin, <span id="username1"></span></h2>
+    </div>
+
+    <div class="content hidden" id="requests-content">
+        <h2>Show Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Request Type</th>
+                    <th>Request Value</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="requests-table-body">
+                <!-- Requests will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content hidden" id="remove-resource-db-content">
+        <h2>Remove Resource from DB</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Resource Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="remove-resource-db-table-body">
+                <!-- Resources will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content hidden" id="add-resource-db-content">
+        <h2>Add Resource to DB</h2>
+        <form action="/cybersolve/webapi/myresource/addresource" method="POST">
+            <label for="resourceName">Enter Resource Name:</label>
+            <input type="text" id="resourceName" name="resourceName" required>
+            <button type="submit" class="btn-green">Submit</button>
+        </form>
+        <div id="add-resource-response">
+            <!-- Server response will be shown here -->
+        </div>
+    </div>
+
+    <div class="content hidden" id="remove-resource-user-content">
+        <h2>Remove Resource from User</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Resource</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="remove-resource-user-table-body">
+                <!-- Data will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+<div class="content  hidden" id="password-change">
+
+    <h2>Change Password</h2>
+
+    <form action="/cybersolve/webapi/myresource/changepassword" method="POST">
+
+        <label for="oldpassword">Enter Old Password:</label>
+
+        <input type="password" id="oldpassword" name="oldpassword" placeholder="Old Password" required>
+
+		<label for="show-old-password">
+
+            <input type="checkbox" id="show-old-password" onclick="document.getElementById('oldpassword').type = this.checked ? 'text' : 'password';">
+
+            Show   
+
+        </label><br>
+
+
+        <label for="newpassword">Enter New Password:</label>
+
+        <input type="password" id="newpassword" name="newpassword" placeholder="New Password" required
+
+               pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+
+               title="Password must be at least 8 characters long, include at least one letter, one number, and one special character">
+
+		<label for="show-new-password">
+
+            <input type="checkbox" id="show-new-password" onclick="document.getElementById('newpassword').type = this.checked ? 'text' : 'password';">
+
+            Show     
+
+        </label><br>
+
+        <button type="submit" class="btn-green">Submit</button>
+
+    </form>
+
+    <div id="add-resource-response">
+
+        <!-- Server response will be shown here -->
+
+    </div>
+
+</div>
+    <div class="content hidden" id="check-users-resource-content">
+        <h2>Check Resources of a User</h2>
+        <form action="/cybersolve/webapi/myresource/checkresources" method="POST">
+            <label for="username">Enter Username:</label>
+            <input type="text" id="username" name="username" required>
+            <button type="submit" class="btn-green">Submit</button>
+        </form>
+        <div id="user-resources-content">
+            <!-- User resources will be loaded here -->
+        </div>
+    </div>
+
+    <div class="content hidden" id="check-resources-user-content">
+        <h2>Check Users of a Resource</h2>
+        <form action="/cybersolve/webapi/myresource/checkusers" method="POST">
+            <label for="resourceName">Enter Resource Name:</label>
+            <input type="text" id="resourceName" name="resourceName" required>
+            <button type="submit" class="btn-green">Submit</button>
+        </form>
+        <div id="resource-users-content">
+            <!-- Resource users will be loaded here -->
+        </div>
+    </div>
+    <div class="content hidden" id="check-approvals">
+
+    <h2>View Approvals</h2>
+
+    <table id="view-approvals-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Username</th>
+
+                <th>Request Type</th>
+
+                <th>Request Value</th>
+
+                <th>Request Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="view-approvals-table-body">
+
+            <!-- Approval rows will be dynamically populated here -->
+
+        </tbody>
+
+    </table>
+    
+
+</div>
+    <div class="content hidden" id="remove-user">
+
+    <h2>Check Users of a Resource</h2>
+
+    <form action="/cybersolve/webapi/myresource/removeuser" method="POST">
+
+        <label for="users">Select Resource:</label>
+
+        <select id="userinfo" name="user" required>
+
+            <!-- Options will be dynamically populated here -->
+
+        </select>
+
+        <button type="submit" class="btn-form">Submit</button>
+
+    </form>
+
+    <div id="all-user-content">
+
+        <!-- User resources will be loaded here -->
+
+    </div>
+
+</div>
+
+ 
+ 
+
+    
+
+    <script>
+        function toggleContent(contentId, loadFunction = null) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => {
+                if (content.id === contentId) {
+                    content.classList.remove('hidden');
+                    if (loadFunction) {
+                        loadFunction();
+                    }
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        async function loadRequests() {
+            try {
+                const response = await fetch('/cybersolve/webapi/myresource/requests');
+                const requests = await response.json();
+                const tableBody = document.getElementById('requests-table-body');
+                tableBody.innerHTML = '';
+                requests.forEach(request => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${request.username}</td>
+                        <td>${request.requestType}</td>
+                        <td>${request.requestValue}</td>
+                        <td>
+
+                        <form action="/cybersolve/webapi/myresource/request/accept" method="POST" style="display:inline;">
+
+                            <input type="hidden" name="username" value="${request.username}">
+
+                            <input type="hidden" name="requestType" value="${request.requestType}">
+
+                            <input type="hidden" name="requestValue" value="${request.requestValue}">
+
+                            <button type="submit" class="accept-button">Accept</button>
+
+                        </form>
+
+                        <form action="/cybersolve/webapi/myresource/request/reject" method="POST" style="display:inline;">
+
+                            <input type="hidden" name="username" value="${request.username}">
+
+                            <input type="hidden" name="requestType" value="${request.requestType}">
+
+                            <input type="hidden" name="requestValue" value="${request.requestValue}">
+
+                            <button type="submit" class="reject-button">Reject</button>
+
+                        </form>
+
+                    </td>
+
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading requests:', error);
+            }
+        }
+
+        async function loadResources() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/resources');
+
+                const resources = await response.json();
+ 
+                const tableBody = document.getElementById('remove-resource-db-table-body');
+
+                tableBody.innerHTML = ''; // Clear existing content
+ 
+                resources.forEach(resource => {
+
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+
+                        <td>${resource.resourceName}</td>
+
+                        <td>
+
+                            <form action="/cybersolve/webapi/myresource/resource/delete" method="POST" style="display:inline;">
+
+                                <input type="hidden" name="resourceName" value="${resource.resourceName}">
+
+                                <button type="submit" class="reject-button">Remove</button>
+
+                            </form>
+
+                        </td>
+
+                    `;
+
+                    tableBody.appendChild(row);
+
+                });
+
+            } catch (error) {
+
+                console.error('Error loading resources:', error);
+
+            }
+
+        }
+ 
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/cybersolve/webapi/users');
+                const users = await response.json();
+                const tableBody = document.getElementById('view-users-table-body');
+                tableBody.innerHTML = '';
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                `;
+                const tbody = document.createElement('tbody');
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <button class="reject-button" onclick="removeUser('${user.id}')">Remove</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                tableBody.appendChild(table);
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function loadRemoveResourceUser() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/userresources');
+
+                const userResources = await response.json();
+ 
+                const tableBody = document.getElementById('remove-resource-user-table-body');
+
+                tableBody.innerHTML = '';
+ 
+                userResources.forEach(userResource => {
+
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+
+                        <td>${userResource.username}</td>
+
+                        <td>${userResource.resourceName}</td>
+
+                        <td>
+
+                            <form action="/cybersolve/webapi/myresource/resource/remove" method="POST" style="display:inline;">
+
+                                <input type="hidden" name="username" value="${userResource.username}">
+
+                                <input type="hidden" name="resourceName" value="${userResource.resourceName}">
+
+                                <button type="submit" class="reject-button">Remove</button>
+
+                            </form>
+
+                        </td>
+
+                    `;
+
+                    tableBody.appendChild(row);
+
+                });
+
+            } catch (error) {
+
+                console.error('Error loading user resources:', error);
+
+            }
+
+        }
+ 
+
+        async function removeResourceFromDB(resourceId) {
+            try {
+                const response = await fetch(`/cybersolve/webapi/myresource/remove/${resourceId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                alert(result.message);
+                loadResources(); // Reload resources list
+            } catch (error) {
+                console.error('Error removing resource:', error);
+            }
+        }
+
+        async function removeUser(userId) {
+            try {
+                const response = await fetch(`/cybersolve/webapi/user/remove/${userId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                alert(result.message);
+                loadUsers(); // Reload users list
+            } catch (error) {
+                console.error('Error removing user:', error);
+            }
+        }
+
+        async function removeResourceFromUser(username, resourceName) {
+            try {
+                const response = await fetch(`/cybersolve/webapi/userresource/remove`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, resourceName })
+                });
+                const result = await response.json();
+                alert(result.message);
+                loadRemoveResourceUser(); // Reload user resources list
+            } catch (error) {
+                console.error('Error removing resource from user:', error);
+            }
+        }
+
+        async function handleRequest(action, requestId) {
+            try {
+                const response = await fetch(`/cybersolve/webapi/request/${action}/${requestId}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                alert(result.message);
+                loadRequests(); // Reload requests list
+            } catch (error) {
+                console.error(`Error handling request (${action}):`, error);
+            }
+        }
+
+        async function loadAddResourceForm() {
+            // Optional: Additional logic if needed
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+
+            displayUsername();
+
+            });
+
+        function displayUsername() {
+
+            const urlParams = new URLSearchParams(window.location.search);
+
+            const username = urlParams.get('username');
+
+            
+            
+
+            if (username) {
+
+                document.getElementById('username1').textContent = username;
+
+                // Optionally set managerID in sessionStorage here if not set elsewhere
+
+                sessionStorage.setItem('userID', username); // Assuming username is being used as managerID
+
+            } else {
+
+                document.getElementById('username1').textContent = 'User'; // Default text
+
+            }
+
+        }
+        async function checkApprovals() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/checkapprovals');
+
+                if (!response.ok) {
+
+                    throw new Error('Network response was not ok');
+
+                }
+ 
+                const approvals = await response.json();
+
+                const tableBody = document.getElementById('view-approvals-table-body');
+
+                tableBody.innerHTML = ''; // Clear previous content
+ 
+                if (approvals.length === 0) {
+
+                    tableBody.innerHTML = '<tr><td colspan="4">No approvals found.</td></tr>';
+
+                } else {
+
+                    approvals.forEach(approval => {
+
+                        const row = document.createElement('tr');
+ 
+                        // Determine CSS class for Request Type
+
+                        let requestTypeClass = '';
+
+                        if (approval.request_type === 'Resource Request') {
+
+                            requestTypeClass = 'resource-request';
+
+                        } else if (approval.request_type === 'Role Request') {
+
+                            requestTypeClass = 'role-request';
+
+                        }
+ 
+                        // Determine CSS class for Request Status
+
+                        let requestStatusClass = '';
+
+                        switch (approval.request_status) {
+
+                            case 'Accepted':
+
+                                requestStatusClass = 'status-accepted';
+
+                                break;
+
+                            case 'Rejected':
+
+                                requestStatusClass = 'status-rejected';
+
+                                break;
+
+                            case 'Pending':
+
+                                requestStatusClass = 'status-pending';
+
+                                break;
+
+                        }
+ 
+                        row.innerHTML = `
+
+                            <td>${approval.username}</td>
+
+                            <td class="${requestTypeClass}">${approval.request_type}</td>
+
+                            <td>${approval.request_value}</td>
+
+                            <td class="${requestStatusClass}">${approval.request_status}</td>
+
+                        `;
+
+                        tableBody.appendChild(row);
+
+                    });
+
+                }
+ 
+            } catch (error) {
+
+                console.error('Error loading approvals:', error);
+
+                document.getElementById('view-approvals-table-body').innerHTML = '<tr><td colspan="4">Error loading approvals. Please try again later.</td></tr>';
+
+            }
+
+        }
+        function logoutfunction() {
+
+            // Clear session storage
+
+            sessionStorage.clear();
+ 
+            // Invalidate session on the server side
+
+            fetch('http://localhost:4569/cybersolve/webapi/myresource/logout', {
+
+                method: 'POST',
+
+                credentials: 'same-origin'
+
+            })
+
+            .then(response => {
+
+                if (response.ok) {
+
+                    // Clear sensitive information
+
+                    clearSensitiveData();
+ 
+                    // Redirect to login page
+
+                    redirectToLogin();
+
+                } else {
+
+                    alert("Logout failed. Please try again.");
+
+                }
+
+            });
+ 
+            // Clear sensitive data immediately
+
+            clearSensitiveData();
+ 
+            // Function to clear sensitive data
+
+            function clearSensitiveData() {
+
+                // Example: Clear any user-specific information in the navigation bar
+
+                document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = '');
+
+                // Optionally clear other elements or hide them
+
+                document.body.innerHTML = '';  // Clear the entire page content
+
+            }
+ 
+            // Function to redirect to the login page and handle back navigation
+
+            function redirectToLogin() {
+
+                // Replace the current history entry with the login page
+
+                history.replaceState(null, null, 'index.jsp');
+ 
+                // Repeat the pushState 10 times to prevent back navigation
+
+                for (let i = 0; i < 100; i++) {
+
+                    history.pushState(null, null, 'index.jsp');
+
+                }
+ 
+                // Redirect immediately to the login page
+
+                window.location.replace('index.jsp');
+
+            }
+ 
+            // Prevent back navigation on the login page
+
+            window.addEventListener('load', function() {
+
+                // Repeat the pushState 10 times to prevent back navigation
+
+                for (let i = 0; i < 100; i++) {
+
+                    history.pushState(null, null, 'index.jsp');
+
+                }
+ 
+                // Add popstate event listener to handle back button navigation
+
+                window.addEventListener('popstate', function() {
+
+                    // Repeat the replace 10 times to make sure user can't go back
+
+                    for (let i = 0; i < 100; i++) {
+
+                        window.location.replace('index.jsp');
+
+                    }
+
+                });
+
+            });
+ 
+            // Function to prevent browser caching of sensitive information
+
+            function noCache() {
+
+                // Set meta tags for no-cache
+
+                let metaTags = [
+
+                    { name: 'cache-control', content: 'no-cache, no-store, must-revalidate' },
+
+                    { name: 'pragma', content: 'no-cache' },
+
+                    { name: 'expires', content: '0' }
+
+                ];
+ 
+                metaTags.forEach(metaTag => {
+
+                    let meta = document.createElement('meta');
+
+                    meta.setAttribute('http-equiv', metaTag.name);
+
+                    meta.content = metaTag.content;
+
+                    document.head.appendChild(meta);
+
+                });
+ 
+                // Additionally, set response headers on the server side to prevent caching
+
+            }
+
+        }
+        async function loadUsersDropdown() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/allusers');
+
+                const users = await response.json();
+
+                const userDropdown = document.getElementById('userinfo');
+ 
+                userDropdown.innerHTML = ''; // Clear any existing options
+ 
+                // Add the default "Select a Resource" option
+
+                const defaultOption = document.createElement('option');
+
+                defaultOption.value = '';
+
+                defaultOption.textContent = 'Select a User';
+
+                defaultOption.disabled = true;
+
+                defaultOption.selected = true;
+
+                userDropdown.appendChild(defaultOption);
+ 
+                // Populate the dropdown with user data
+
+                users.forEach(user => {
+
+                    const option = document.createElement('option');
+
+                    option.value = user.username; // Assuming `username` is the key you want to use as the value
+
+                    option.textContent = user.username; // Display username
+
+                    userDropdown.appendChild(option);
+
+                });
+
+            } catch (error) {
+
+                console.error('Error fetching users:', error);
+
+            }
+
+        }
+ 
+ 
+ 
+    </script>
+</body>
+</html>

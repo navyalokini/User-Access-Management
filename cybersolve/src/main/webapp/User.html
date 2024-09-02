@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, black, white);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333; /* Default text color for better readability */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: none;
+        }
+
+        th, td {
+            padding: 10px 15px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #333;
+            color: white;
+            font-size: 16px;
+        }
+
+        td {
+            background: #f9f9f9;
+        }
+
+        tr:nth-child(even) td {
+            background: #e9e9e9;
+        }
+
+        tr:hover td {
+            background: #d3d3d3;
+            transition: background 0.3s;
+        }
+
+        .accept-button {
+            background-color: #4CAF50; /* Green background */
+        }
+
+        .reject-button {
+            background-color: #f44336; /* Red background */
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            position: fixed; /* Fix the navbar at the top */
+            top: 0;
+            left: 0;
+            z-index: 1000; /* Ensure the navbar is above other content */
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .username {
+            margin-top: 70px; /* Space below the navbar */
+            margin-left: 20px; /* Space from the left */
+            color: white;
+            font-size: 24px;
+            position: absolute; /* Positioning it absolutely */
+            top: 10px;
+            left: 20px;
+        }
+
+        .content {
+            margin-top: 110px; /* Adjusted margin to avoid overlapping with the welcome message */
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .dashboard-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            display: none; /* Hide initially */
+        }
+
+        .form-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .form-container input[type="text"],
+        .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .form-container input[type="submit"] {
+            background: linear-gradient(45deg, #ff6b6b, #f7c6c7);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .form-container input[type="submit"]:hover {
+            background: linear-gradient(45deg, #ff6b6b, #ff4757);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: scale(1.05);
+        }
+
+        .btn-green {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn-green:hover {
+            background-color: darkgreen;
+        }
+
+        .form-container .dropdown {
+            margin-bottom: 10px;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .team-members {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .add-button {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .add-button:hover {
+            background: linear-gradient(45deg, #0056b3, #003d7a);
+            transform: scale(1.05);
+        }
+
+        .navbar .logout {
+            float: right;
+            background-color: #f44336; /* Red background */
+            color: white;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .navbar .logout:hover {
+            background-color: #e53935; /* Darker red on hover */
+            color: white;
+        }
+        .resource-request {
+
+		   background: #c3e6cb;
+ 
+		}
+        .role-request {
+
+		    background-color: #c3e6cb; /* Light Green */
+
+		}
+
+		/* Request Status Colors */
+
+		.status-accepted {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+
+		.status-rejected {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+
+		.status-pending {
+
+		    color: black;
+
+		    font-weight: bold;
+
+		}
+        
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#" onclick="showSection('checkResources')">Check Resources</a>
+        <a href="#" onclick="showSection('requestResources')">Request New Resources</a>
+        <a href="#" onclick="showSection('requestForManager')">Request For Manager/Admin</a>
+        <a href="#" onclick="showSection('remove-resource-user-content')">Remove Own Resources</a>
+        <a href="#" onclick="showSection('check-approvals')">Check approvals</a>
+        <a href="#change-password" class="change" onclick="showSection('password-change')">Change password</a>
+ 
+ 
+        
+        <a href="#" onclick="logoutfunction()" class="logout">Logout</a>
+    </div>
+
+    <!-- Welcome Message -->
+    <h2 class="username">Welcome user, <span id="username"></span>!</h2>
+
+    <!-- Content Container -->
+    <div class="content">
+        <div id="checkResources" class="dashboard-container">
+            <div class="form-container">
+                <h3>Your Resources:</h3>
+                <div id="resources-list"></div>
+            </div>
+        </div>
+
+      <div id="requestResources" class="dashboard-container">
+
+    <div class="form-container">
+
+        <form id="resourceRequestForm" action="webapi/myresource/requestResources" method="post" id="requestForm">
+
+            <select name="resourceName" id="resourceDropdown" required>
+
+                <!-- Options will be dynamically populated here -->
+
+            </select>
+
+            <input type="submit" value="Request New Resources">
+
+        </form>
+
+    </div>
+
+</div>
+ 
+        
+
+        <div id="requestForManager" class="dashboard-container">
+            <div class="form-container">
+                <form action="webapi/myresource/requestRole" method="post">
+                    <input type="text" name="requestedRole" placeholder="Manager/Admin" required><br>
+                    <input type="submit" value="Request for Manager/Admin">
+                </form>
+            </div>
+        </div>
+
+        <div id="remove-resource-user-content" class="dashboard-container">
+            <h2>Remove Own Resources</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="remove-resource-user-table-body">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="dashboard-container hidden" id="check-approvals">
+
+    <h2>View Approvals</h2>
+
+    <table id="view-approvals-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Username</th>
+
+                <th>Request Type</th>
+
+                <th>Request Value</th>
+
+                <th>Request Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="view-approvals-table-body">
+
+            <!-- Approval rows will be dynamically populated here -->
+
+        </tbody>
+
+    </table>
+
+</div>
+<div class="dashboard-container hidden" id="password-change">
+
+    <h2>Change Password</h2>
+
+    <form action="/cybersolve/webapi/myresource/changepassword" method="POST">
+
+        <label for="oldpassword">Enter Old Password:</label>
+
+        <input type="password" id="oldpassword" name="oldpassword" placeholder="Old Password" required>
+
+		<label for="show-old-password">
+
+            <input type="checkbox" id="show-old-password" onclick="document.getElementById('oldpassword').type = this.checked ? 'text' : 'password';">
+
+            Show   
+
+        </label><br>
+
+
+        <label for="newpassword">Enter New Password:</label>
+
+        <input type="password" id="newpassword" name="newpassword" placeholder="New Password" required
+
+               pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+
+               title="Password must be at least 8 characters long, include at least one letter, one number, and one special character">
+
+		<label for="show-new-password">
+
+            <input type="checkbox" id="show-new-password" onclick="document.getElementById('newpassword').type = this.checked ? 'text' : 'password';">
+
+            Show     
+
+        </label>
+
+        <button type="submit" class="btn-green">Submit</button>
+
+    </form>
+
+    <div id="add-resource-response">
+
+        <!-- Server response will be shown here -->
+
+    </div>
+
+</div>
+ 
+ 
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.dashboard-container');
+            sections.forEach(section => section.style.display = 'none'); // Hide all sections
+            document.getElementById(sectionId).style.display = 'block'; // Show the selected section
+
+            // Call specific functions based on the section shown
+            if (sectionId === 'checkResources') {
+                fetchManagerResources(); // Fetch resources when "Check Resources" section is shown
+            } 
+            else if(sectionId === 'check-approvals')
+       	 {
+          	 checkApprovals();
+       	 }else if(sectionId === 'requestResources')
+
+    	 {
+
+    	 fetchOnlyInList1Resources();
+
+    	 }
+
+            else if (sectionId === 'remove-resource-user-content') {
+                loadRemoveResourceUser();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayUsername();
+        });
+
+        function displayUsername() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('username').textContent = username;
+                sessionStorage.setItem('userID', username); // Assuming username is being used as managerID
+            } else {
+                document.getElementById('username').textContent = "Guest";
+            }
+        }
+
+        async function fetchManagerResources() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/getManagerResources');
+
+                if (!response.ok) {
+
+                    throw new Error('Network response was not ok');
+
+                }
+
+                const resources = await response.json();
+
+                console.log('Manager Resources:', resources);
+     
+                const resourcesListDiv = document.getElementById('resources-list');
+
+                resourcesListDiv.innerHTML = ''; // Clear existing content
+     
+                if (resources.length === 0) {
+
+                    resourcesListDiv.innerHTML = '<p>No resources found.</p>';
+
+                } else {
+
+                    const list = document.createElement('ul');
+
+                    resources.forEach(resource => {
+
+                        const listItem = document.createElement('li');
+
+                        listItem.textContent = resource;
+
+                        list.appendChild(listItem);
+
+                    });
+
+                    resourcesListDiv.appendChild(list);
+
+                }
+
+            } catch (error) {
+
+                console.error('Error fetching manager resources:', error);
+
+                document.getElementById('resources-list').innerHTML = '<p>Error fetching resources. Please try again later.</p>';
+
+            }
+
+        }
+     
+        async function loadRemoveResourceUser() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/getManagerResources');
+
+                if (!response.ok) {
+
+                    throw new Error('Network response was not ok');
+
+                }
+
+                const managerResources = await response.json();
+
+                const tableBody = document.getElementById('remove-resource-user-table-body');
+
+                tableBody.innerHTML = ''; // Clear previous content
+     
+                if (managerResources.length === 0) {
+
+                    tableBody.innerHTML = '<tr><td colspan="2">No resources found.</td></tr>';
+
+                } else {
+
+                    managerResources.forEach(resource => {
+
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+
+                            <td>${resource}</td>
+
+                            <td>
+
+                                <form action="/cybersolve/webapi/myresource/resourceRemove" method="POST" style="display:inline;">
+
+                                    <input type="hidden" name="resourceName" value="${resource}">
+
+                                    <button type="submit" class="reject-button">Remove</button>
+
+                                </form>
+
+                            </td>
+
+                        `;
+
+                        tableBody.appendChild(row);
+
+                    });
+
+                }
+
+            } catch (error) {
+
+                console.error('Error loading user resources:', error);
+
+                document.getElementById('remove-resource-user-table-body').innerHTML = '<tr><td colspan="2">Error loading resources. Please try again later.</td></tr>';
+
+            }
+
+        }
+        async function fetchOnlyInList1Resources() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/listcheck');
+
+                if (!response.ok) {
+
+                    throw new Error('Network response was not ok');
+
+                }
+
+                const resources = await response.json();
+
+                console.log('OnlyInList1 Resources:', resources);
+     
+                const dropdown = document.getElementById('resourceDropdown');
+
+                dropdown.innerHTML = ''; // Clear existing options
+     
+             // Add the default "Select a Resource" option
+
+                const defaultOption = document.createElement('option');
+
+                defaultOption.value = '';
+
+                defaultOption.textContent = 'Select a Resource';
+
+                defaultOption.disabled = true;
+
+                defaultOption.selected = true;
+
+                dropdown.appendChild(defaultOption);
+
+                if (resources.length === 0) {
+
+                    dropdown.innerHTML = '<option>No resources available</option>';
+
+                } else {
+
+                    resources.forEach(resource => {
+
+                        const option = document.createElement('option');
+
+                        option.value = resource;
+
+                        option.textContent = resource;
+
+                        dropdown.appendChild(option);
+
+                    });
+
+                }
+
+            } catch (error) {
+
+                console.error('Error fetching resources:', error);
+
+                const dropdown = document.getElementById('');
+
+                dropdown.innerHTML = '<option>Error fetching resources</option>';
+
+            }
+
+        }
+     
+        async function checkApprovals() {
+
+            try {
+
+                const response = await fetch('/cybersolve/webapi/myresource/checkmyapprovals');
+
+                if (!response.ok) {
+
+                    throw new Error('Network response was not ok');
+
+                }
+ 
+                const approvals = await response.json();
+
+                const tableBody = document.getElementById('view-approvals-table-body');
+
+                tableBody.innerHTML = ''; // Clear previous content
+ 
+                if (approvals.length === 0) {
+
+                    tableBody.innerHTML = '<tr><td colspan="4">No approvals found.</td></tr>';
+
+                } else {
+
+                    approvals.forEach(approval => {
+
+                        const row = document.createElement('tr');
+ 
+                        // Determine CSS class for Request Type
+
+                        let requestTypeClass = '';
+
+                        if (approval.request_type === 'Resource Request') {
+
+                            requestTypeClass = 'resource-request';
+
+                        } else if (approval.request_type === 'Role Request') {
+
+                            requestTypeClass = 'role-request';
+
+                        }
+ 
+                        // Determine CSS class for Request Status
+
+                        let requestStatusClass = '';
+
+                        switch (approval.request_status) {
+
+                            case 'Accepted':
+
+                                requestStatusClass = 'status-accepted';
+
+                                break;
+
+                            case 'Rejected':
+
+                                requestStatusClass = 'status-rejected';
+
+                                break;
+
+                            case 'Pending':
+
+                                requestStatusClass = 'status-pending';
+
+                                break;
+
+                        }
+ 
+                        row.innerHTML = `
+
+                            <td>${approval.username}</td>
+
+                            <td class="${requestTypeClass}">${approval.request_type}</td>
+
+                            <td>${approval.request_value}</td>
+
+                            <td class="${requestStatusClass}">${approval.request_status}</td>
+
+                        `;
+
+                        tableBody.appendChild(row);
+
+                    });
+
+                }
+ 
+            } catch (error) {
+
+                console.error('Error loading approvals:', error);
+
+                document.getElementById('view-approvals-table-body').innerHTML = '<tr><td colspan="4">Error loading approvals. Please try again later.</td></tr>';
+
+            }
+
+        }
+        function logoutfunction() {
+
+            // Clear session storage
+
+            sessionStorage.clear();
+ 
+            // Invalidate session on the server side
+
+            fetch('http://localhost:4569/cybersolve/webapi/myresource/logout', {
+
+                method: 'POST',
+
+                credentials: 'same-origin'
+
+            })
+
+            .then(response => {
+
+                if (response.ok) {
+
+                    // Clear sensitive information
+
+                    clearSensitiveData();
+ 
+                    // Redirect to login page
+
+                    redirectToLogin();
+
+                } else {
+
+                    alert("Logout failed. Please try again.");
+
+                }
+
+            });
+ 
+            // Clear sensitive data immediately
+
+            clearSensitiveData();
+ 
+            // Function to clear sensitive data
+
+            function clearSensitiveData() {
+
+                // Example: Clear any user-specific information in the navigation bar
+
+                document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = '');
+
+                // Optionally clear other elements or hide them
+
+                document.body.innerHTML = '';  // Clear the entire page content
+
+            }
+ 
+            // Function to redirect to the login page and handle back navigation
+
+            function redirectToLogin() {
+
+                // Replace the current history entry with the login page
+
+                history.replaceState(null, null, 'index.jsp');
+ 
+                // Repeat the pushState 100 times to prevent back navigation
+
+                for (let i = 0; i < 100; i++) {
+
+                    history.pushState(null, null, 'index.jsp');
+
+                }
+ 
+                // Redirect immediately to the login page
+
+                window.location.replace('index.jsp');
+
+            }
+ 
+            // Prevent back navigation on the login page
+
+            window.addEventListener('load', function() {
+
+                // Repeat the pushState 100 times to prevent back navigation
+
+                for (let i = 0; i < 100; i++) {
+
+                    history.pushState(null, null, 'index.jsp');
+
+                }
+ 
+                // Add popstate event listener to handle back button navigation
+
+                window.addEventListener('popstate', function() {
+
+                    // Repeat the replace 10 times to make sure user can't go back
+
+                    for (let i = 0; i < 100; i++) {
+
+                        window.location.replace('index.jsp');
+
+                    }
+
+                });
+
+            });
+ 
+            // Function to prevent browser caching of sensitive information
+
+            function noCache() {
+
+                // Set meta tags for no-cache
+
+                let metaTags = [
+
+                    { name: 'cache-control', content: 'no-cache, no-store, must-revalidate' },
+
+                    { name: 'pragma', content: 'no-cache' },
+
+                    { name: 'expires', content: '0' }
+
+                ];
+ 
+                metaTags.forEach(metaTag => {
+
+                    let meta = document.createElement('meta');
+
+                    meta.setAttribute('http-equiv', metaTag.name);
+
+                    meta.content = metaTag.content;
+
+                    document.head.appendChild(meta);
+
+                });
+ 
+                // Additionally, set response headers on the server side to prevent caching
+
+            }
+
+        }
+ 
+ 
+     
+    </script>
+</body>
+</html>
